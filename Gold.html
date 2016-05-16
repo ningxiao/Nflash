@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>捕鱼达人</title>
+    <meta name="author" content="ningxiao"/>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #candiv {
+            width: 1024px;
+            height: 650px;
+            position: relative;
+            left: 50%;
+            margin-left: -512px;
+            background-image:url(fish/img/game_bg_2_hd.jpg) ;
+        }
+
+        #canvas {
+            width: 1024px;
+            height: 650px;
+            position: relative;
+        }
+    </style>
+    <script type="text/javascript" src="flash/utils/Utils.js"></script>
+    <script type="text/javascript" src="flash/utils/Profile.js"></script>
+    <script type="text/javascript" src="flash/utils/Tween.js"></script>
+    <script type="text/javascript" src="flash/events/EventDispatcher.js"></script>
+    <script type="text/javascript" src="flash/display/Graphics.js"></script>
+    <script type="text/javascript" src="flash/display/DisplayObject.js"></script>
+    <script type="text/javascript" src="flash/events/Event.js"></script>
+    <script type="text/javascript" src="flash/errors/Error.js"></script>
+    <script type="text/javascript" src="flash/events/KeyboardEvent.js"></script>
+    <script type="text/javascript" src="flash/events/MouseEvent.js"></script>
+    <script type="text/javascript" src="flash/display/BitmapData.js"></script>
+    <script type="text/javascript" src="flash/display/Bitmap.js"></script>
+    <script type="text/javascript" src="flash/display/MovieClip.js"></script>
+    <script type="text/javascript" src="flash/display/Shape.js"></script>
+    <script type="text/javascript" src="flash/display/Button.js"></script>
+    <script type="text/javascript" src="flash/display/Sprite.js"></script>
+    <script type="text/javascript" src="flash/display/Stage.js"></script>
+    <script type="text/javascript" src="game/coinAni.js"></script>
+    <script type="text/javascript">
+        var $ = function (name){
+            return name && document.getElementById(name);
+        }
+    </script>
+</head>
+<body>
+<div id="candiv">
+    <canvas id="canvas" width="1024" height="650">
+        <p>对不起,该浏览器不支持Html5</p>
+    </canvas>
+</div>
+<script type="text/javascript">
+    var coinMovieClip,animateButton,canvas,imgList=[{"coinAni":"imgs/coinAni.png"},{"btnA":"imgs/Button.png"}],bitmaps={};
+    function onClickAnimate(event) {
+        //console.log(event.localX,event.localY);
+        flash.utils.animate(coinMovieClip,{x:event.localX-coinMovieClip.width/2,y:event.localY-coinMovieClip.height/2},2000,'elasticOut',function(){
+            console.log("执行完毕",Stage.animate);
+        });
+    }
+    flash.utils.queueImg(imgList,bitmaps, function () {
+        Stage = new flash.display.Stage($("canvas"), 60);
+        coinMovieClip = coinAni(100, 100, bitmaps["coinAni"]);
+        animateButton = new flash.display.Button(460, 620, new flash.display.BitmapData(89, 26, 0, 0, bitmaps["btnA"]));
+        animateButton.useHandCursor = true;
+        animateButton.setOverSkin(new flash.display.BitmapData(89, 26, 0, 26, bitmaps["btnA"]));
+        animateButton.setLabel('开始动画');
+        animateButton.labely = animateButton.height / 2 + 4;
+        animateButton.labelx = 10;
+        Stage.addChild(animateButton);
+        Stage.addChild(coinMovieClip);
+        Stage.addEventListener(flash.events.MouseEvent.CLICK, onClickAnimate);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>开启摄像头拍照</title>
+    <meta name="author" content="ningxiao"/>
+</head>
+<body>
+<div role="main">
+    <video id="video" width="640" height="480" style="display: none;"></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <input type="button" value="Start" onclick="start()">
+    <input type="button" value="Stop" onclick="stop()">
+    <input type="button" value="拍照" onclick="photo()">
+</div>
+<script type="text/javascript">
+    var video,canvas,context;
+    function start() {
+        video = document.getElementById("video");
+        canvas = document.getElementById("canvas");
+        context = canvas.getContext("2d");
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+        if (navigator.getUserMedia) {
+            var gumOptions = {video:true, toString:function () {
+                return 'video';
+            }};
+            navigator.getUserMedia(gumOptions, function successCallback(stream) {
+                if (navigator.getUserMedia == navigator.mozGetUserMedia) {
+                    video.src = stream;
+                } else {
+                    video.src = window.URL.createObjectURL(stream) || stream;
+                }
+                video.play();
+            }, function errorCallback(error) {
+                console.error('摄像头调启异常: [CODE ' + error.code + ']');
+                video.play();
+            });
+        } else {
+            document.querySelector('[role=main]').innerHTML = '<p class="error">不支持摄像头<a href="http://www.opera.com/next/">看支撑详情</a>.</p>';
+        }
+    }
+    function photo(){
+        context.drawImage(video, 0, 0, 640, 480);
+    }
+    function stop() {
+        video = document.getElementById('sourcevid');
+        video.src = "";
+    }
+</script>
+</body>
+</html>

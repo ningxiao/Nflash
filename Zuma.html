@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>祖玛游戏</title>
+    <meta name="author" content="ningxiao"/>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #candiv {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            top: 50px;
+            left: 50%;
+            margin-left: -400px;
+            background-color: #000;
+        }
+
+        #canvas {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            border-style: solid;
+            border-width: 1px;
+        }
+    </style>
+    <script type="text/javascript" src="flash/utils/Utils.js"></script>
+    <script type="text/javascript" src="flash/utils/Profile.js"></script>
+    <script type="text/javascript" src="flash/geom/Rectangle.js"></script>
+    <script type="text/javascript" src="flash/geom/Point.js"></script>
+    <script type="text/javascript" src="flash/events/EventDispatcher.js"></script>
+    <script type="text/javascript" src="flash/display/Graphics.js"></script>
+    <script type="text/javascript" src="flash/display/DisplayObject.js"></script>
+    <script type="text/javascript" src="flash/events/Event.js"></script>
+    <script type="text/javascript" src="flash/errors/Error.js"></script>
+    <script type="text/javascript" src="flash/events/KeyboardEvent.js"></script>
+    <script type="text/javascript" src="flash/events/MouseEvent.js"></script>
+    <script type="text/javascript" src="flash/utils/Pool.js"></script>
+    <script type="text/javascript" src="flash/utils/Mode.js"></script>
+    <script type="text/javascript" src="flash/display/BitmapData.js"></script>
+    <script type="text/javascript" src="flash/display/Bitmap.js"></script>
+    <script type="text/javascript" src="flash/display/MovieClip.js"></script>
+    <script type="text/javascript" src="flash/display/Shape.js"></script>
+    <script type="text/javascript" src="flash/display/Sprite.js"></script>
+    <script type="text/javascript" src="flash/display/Button.js"></script>
+    <script type="text/javascript" src="flash/display/Stage.js"></script>
+    <script type="text/javascript" src="game/cannon.js"></script>
+    <script type="text/javascript" src="game/bullet.js"></script>
+</head>
+<body>
+<div id="candiv">
+    <canvas id="canvas" width="800" height="600">
+        <p>对不起,该浏览器不支持Html5</p>
+    </canvas>
+</div>
+<img src="" alt="" id="darw">
+<script type="text/javascript">
+    var urls = [
+        {"cannon":"imgs/zuma/cannon.jpg"},
+        {"bulletA":"imgs/zuma/bulletA.jpg"},
+        {"bulletB":"imgs/zuma/bulletB.jpg"},
+        {"bulletC":"imgs/zuma/bulletC.jpg"},
+        {"bulletD":"imgs/zuma/bulletD.jpg"},
+        {"bulletE":"imgs/zuma/bulletE.jpg"}
+    ], bitmaps = [];
+    var canvas = document.getElementById('canvas');
+    var cannon_mov = null,main = null,pi = 180/Math.PI;
+    var maps = [],bullets = [],bulls = [];
+    Stage = new flash.display.Stage(canvas, 40);
+    flash.utils.queueImg(urls, bitmaps, function () {
+        main = new flash.display.Sprite(0, 0, {height:600, width:800});
+        cannon_mov = cannon((Stage.width - 108)/2,(Stage.height - 108)/2,108,108,bitmaps["cannon"]);
+        main.addChild(bullet(0,0,32,32,bitmaps["bulletA"],3));
+        maps = drawMap();
+        Stage.addChild(main);
+        Stage.addChild(cannon_mov);
+     //   Stage.addEventListener(flash.events.ENTER_FRAME, onEnterFrame);
+        main.addEventListener(flash.events.MouseEvent.MOUSEMOVE, onMouseMove);
+        main.addEventListener(flash.events.MouseEvent.CLICK, cannon_onClick);
+    });
+    /**
+     * 绘制地图并且返回运动坐标与旋转角度
+     * @returns {Array}
+     */
+    function drawMap(){
+        var x =  cannon_mov.x + cannon_mov.centerX,y =  cannon_mov.y + cannon_mov.centerY;
+        var mx= 0,my= 0,po = false,maps = [];
+        main.graphics.lineStyle(1,"#0000ff",flash.profile.lineJoin.round);
+        main.graphics.moveTo(x,y);
+        y+=cannon_mov.centerY/2;
+        for(var i= 180,k=300,rk;i<360*2;i++){
+            k-=0.2;
+            mx = k * Math.sin(i * Math.PI / 180)+x;
+            my = k * Math.cos(i * Math.PI / 180)+y;
+            if(!po){
+                po = {x:mx,y:my};
+            }
+            main.graphics.lineTo(mx,my);
+           if(flash.utils.getLength(mx,my,po.x,po.y)>=32){
+                po = {x:mx,y:my};
+                maps.push({x:mx-16,y:my-16,r:-(90+i)});
+           }
+        }
+        return maps;
+    }
+    function cannon_onClick(event) {
+        var x = (Stage.width - 32)/2,y=(Stage.height - 32)/ 2,bull;
+        bull = bullet(x,y,32,32,bitmaps["bulletA"],3);
+        bull.rotation = cannon_mov.rotation;
+        main.addChild(bull);
+        bulls.push(bull);
+        bull.iSpeed = 4;
+    }
+    function onMouseMove(event){
+        var y =  Stage.mouseY - (cannon_mov.centerY + cannon_mov.stageY);
+        var x =  Stage.mouseX - (cannon_mov.centerX + cannon_mov.stageX);
+        console.log(pi*Math.atan2(y,x));
+        cannon_mov.rotation = pi*Math.atan2(y,x);
+    }
+    function addBullet(){
+        var bull;
+        if(bullets.length<maps.length){
+            bull = bullet(maps[0].x,maps[0].y,32,32,bitmaps["bulletA"],3);
+            bull.rotation = maps[0].r;
+            bullets.push(bull);
+            main.addChild(bull);
+        }
+    }
+    function onEnterFrame(event) {
+        var y =  (cannon_mov.centerY + cannon_mov.stageY) - Stage.mouseY;
+        var x =  Stage.mouseX - (cannon_mov.centerX + cannon_mov.stageX);
+        console.log(pi*Math.atan2(y,x));
+        //cannon_mov.rotation = pi*Math.atan2(w,h);
+    }
+</script>
+</body>
+</html>

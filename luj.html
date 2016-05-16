@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>动态读取路径</title>
+    <meta name="author" content="ningxiao"/>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #candiv {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            top: 50px;
+            left: 50%;
+            margin-left: -400px;
+        }
+
+        #canvas {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            border-style: solid;
+            border-width: 1px;
+        }
+    </style>
+    <script type="text/javascript" src="flash/utils/Utils.js"></script>
+</head>
+<body>
+<div id="candiv">
+    <canvas id="canvas" width="800" height="600">
+        <p>对不起,该浏览器不支持Html5</p>
+    </canvas>
+</div>
+<img src="" alt="" id="darw">
+<script type="text/javascript">
+    var rs, obj, sum, times, imw, imh, bitmapData, bitmap, cannon;
+    var urls = [{"cannon":"imgs/23.png"}], canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d'), stop = true, json = {}, bitmaps = [], paths = [], index = 0;
+    flash.utils.queueImg(urls, bitmaps, function () {
+        cannon = bitmaps["cannon"];
+        imw = cannon.width;
+        imh = cannon.height;
+        rs = imw * 4;
+        ctx.drawImage(cannon, 0, 0, imw, imh, 0, 0, imw, imh);
+        bitmap = ctx.getImageData(0, 0, imw, imh);
+        bitmapData = bitmap.data;
+        /**
+         * 取得地图开始坐标
+         */
+        for (var i = imw - 1; i >= 0; i--) {
+            for (var k = 0; k < imh; k++) {
+                index = k * rs + i * 4 + 3;
+                if (bitmapData[index]) {
+                    json[index] = true;
+                    paths.push({x:i, y:k});
+                    break;
+                }
+            }
+            if (paths.length) {
+                break;
+            }
+        }
+        i = 0;
+        //利用九宫格算法顺序取得绘制路线坐标生产线性数组
+        while (stop) {
+            if (paths[i]) {
+                obj = getPath(paths[i].x, paths[i].y);
+                if (obj) {
+                    paths.push(obj);
+                    i++;
+                } else {
+                    stop = false;
+                }
+            }
+        }
+        index = 0;
+        times = setInterval(onEnterFrame, 100);
+        console.log(flash.utils.getType(bitmapData));
+    });
+    /**
+     * 坐标九宫格算法
+     * @param r
+     * @param l
+     * @return {*}
+     */
+    function getPath(r, l) {
+        var y, x, index;
+        for (var i = 0; i < 9; i++) {
+            x = r + (i % 3 - 1);
+            y = l + (parseInt(i / 3) - 1);
+            index = y * rs + x * 4 + 3;
+            if (bitmapData[index] && !json[index]) {
+                json[index] = true;
+                return {x:x, y:y};
+                break;
+            }
+        }
+        return false;
+    }
+    function onEnterFrame() {
+        obj = paths[index];
+        sum = obj.y * imw + obj.x;
+        bitmapData[sum * 4] = 255;
+        bitmapData[sum * 4 + 1] = 0;
+        bitmapData[sum * 4 + 2] = 0;
+        bitmapData[sum * 4 + 3] = 255;
+        ctx.putImageData(bitmap, 0, 0);
+        index++;
+        if (index >= paths.length) {
+            clearInterval(times);
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Button测试</title>
+    <meta name="author" content="ningxiao"/>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #candiv {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            top: 50px;
+            left: 50%;
+            margin-left: -400px;
+        }
+
+        #canvas {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            border-style: solid;
+            border-width: 1px;
+        }
+    </style>
+    <script type="text/javascript" src="flash/utils/Utils.js"></script>
+    <script type="text/javascript" src="flash/utils/Profile.js"></script>
+    <script type="text/javascript" src="flash/geom/Rectangle.js"></script>
+    <script type="text/javascript" src="flash/geom/Point.js"></script>
+    <script type="text/javascript" src="flash/events/EventDispatcher.js"></script>
+    <script type="text/javascript" src="flash/display/Graphics.js"></script>
+    <script type="text/javascript" src="flash/display/DisplayObject.js"></script>
+    <script type="text/javascript" src="flash/events/Event.js"></script>
+    <script type="text/javascript" src="flash/errors/Error.js"></script>
+    <script type="text/javascript" src="flash/events/KeyboardEvent.js"></script>
+    <script type="text/javascript" src="flash/events/MouseEvent.js"></script>
+    <script type="text/javascript" src="flash/utils/Pool.js"></script>
+    <script type="text/javascript" src="flash/utils/Mode.js"></script>
+    <script type="text/javascript" src="flash/display/BitmapData.js"></script>
+    <script type="text/javascript" src="flash/display/Bitmap.js"></script>
+    <script type="text/javascript" src="flash/display/MovieClip.js"></script>
+    <script type="text/javascript" src="flash/display/Shape.js"></script>
+    <script type="text/javascript" src="flash/display/Sprite.js"></script>
+    <script type="text/javascript" src="flash/display/Button.js"></script>
+    <script type="text/javascript" src="flash/display/Stage.js"></script>
+</head>
+<body>
+<div id="candiv">
+    <canvas id="canvas" width="800" height="600">
+        <p>对不起,该浏览器不支持Html5</p>
+    </canvas>
+</div>
+<script type="text/javascript">
+    Stage = new flash.display.Stage(document.getElementById('canvas'), 40);
+    var urls = [
+        {"btnA":"imgs/Button.png"},
+        {"cannon_minus":"imgs/cannon_plus.png"},
+        {"cannon_down":"imgs/cannon_plus_down.png"},
+        {"lamp":"imgs/lamp.gif"}
+    ], bitmaps = [];
+    var btn = null, btnB = null, spr = null;
+    flash.utils.queueImg(urls, bitmaps, function () {
+        spr = new flash.display.Sprite(0, 100, {height:400, width:400});
+        btn = new flash.display.Button(0, 0, new flash.display.BitmapData(89, 26, 0, 0, bitmaps["btnA"]));
+        btn.useHandCursor = true;
+        btn.setOverSkin(new flash.display.BitmapData(89, 26, 0, 26, bitmaps["btnA"]));
+        btn.setLabel('执行删除');
+        btn.labely = btn.height / 2 + 4;
+        btn.labelx = 10;
+        btnB = new flash.display.Button(0, 50, new flash.display.BitmapData(44, 31, 0, 0, bitmaps["cannon_minus"]));
+        btnB.useHandCursor = true;
+        btnB.setOverSkin(new flash.display.BitmapData(44, 31, 0, 0, bitmaps["cannon_down"]));
+        //spr.graphics.beginFill("#0000ff");
+        spr.graphics.lineStyle(2,"#0000ff",flash.profile.lineJoin.round);
+        spr.graphics.beginBitmapFill(new flash.display.BitmapData(89, 26, 0, 0, bitmaps["btnA"]), "repeat");
+       // spr.graphics.beginGradientFill(flash.profile.gradientType.LINEAR,[0,0,170,0],["black","white"],[0,1]);
+       // spr.graphics.beginBitmapFill(bitmaps["lamp"],flash.profile.pattern.repeat);
+       // spr.graphics.drawRect(20,20,150,100);
+        spr.graphics.moveTo(150,150);
+            spr.graphics.lineTo(200,200);
+        spr.graphics.lineTo(150,250);
+        spr.graphics.endFill();
+        spr.addChild(btn);
+        spr.addChild(btnB);
+        Stage.addChild(spr);
+        init();
+    });
+    function init() {
+        btnB.addEventListener(flash.events.MouseEvent.MOUSEDOWN, onClick);
+        btnB.addEventListener(flash.events.MouseEvent.MOUSEOUT, onMouseOut);
+        btnB.addEventListener(flash.events.MouseEvent.MOUSEOVER, onMouseMove);
+        btn.addEventListener(flash.events.MouseEvent.MOUSEDOWN, onClick);
+        btn.addEventListener(flash.events.MouseEvent.MOUSEOUT, onMouseOut);
+        btn.addEventListener(flash.events.MouseEvent.MOUSEOVER, onMouseMove);
+        spr.addEventListener(flash.events.MouseEvent.CLICK, onClick);
+        //Stage.addEventListener(flash.events.ENTER_FRAME, onEnterFrame);
+    }
+    /**
+     * 移入事件
+     * @param event
+     */
+    function onMouseMove(event) {
+        console.log("移入金币");
+    }
+    /**
+     * 移除事件
+     * @param event
+     */
+    function onMouseOut(event) {
+        console.log("离开金币");
+    }
+    /**
+     * 单击事件
+     * @param event
+     */
+    function onClick(event) {
+        spr.x+=10;
+        spr.setX(spr.x);
+        console.log("单击i",event.target);
+    }
+    /**
+     * 帧频事件
+     * @param event
+     */
+    function onEnterFrame(event) {
+
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>动态读取路径</title>
+    <meta name="author" content="ningxiao"/>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #candiv {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            top: 50px;
+            left: 50%;
+            margin-left: -400px;
+        }
+
+        #canvas {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            border-style: solid;
+            border-width: 1px;
+        }
+    </style>
+    <script type="text/javascript" src="flash/utils/Utils.js"></script>
+</head>
+<body>
+<div id="candiv">
+    <canvas id="canvas" width="800" height="600">
+        <p>对不起,该浏览器不支持Html5</p>
+    </canvas>
+</div>
+<img src="" alt="" id="darw">
+<script type="text/javascript">
+    var sum, times, imw, imh, bitmapData, bitmap, cannon, worker,paths;
+    var urls = [{"cannon":"imgs/23.png"},{"bullet1":"fish/img/bullet1.png"}], canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d'),bitmaps = [],index = 0,bullet1;
+    flash.utils.queueImg(urls, bitmaps, function () {
+        cannon = bitmaps["cannon"];
+        bullet1 =bitmaps["bullet1"];
+        imw = cannon.width;
+        imh = cannon.height;
+       // ctx.rotate(370*Math.PI/180);
+        ctx.drawImage(cannon, 0, 0, imw, imh, 0, 0, imw, imh);
+        bitmap = ctx.getImageData(0, 0, imw, imh);
+        bitmapData = bitmap.data;
+        setTimeout(function(){
+            openWorker({w:imw,h:imh,data:bitmapData});
+        },2000);
+        console.log(flash.utils.getType(bitmapData));
+    });
+    /**
+     * 开始多线程进行像素与寻路密集运算
+     */
+    function openWorker(data) {
+        console.log("开启线程-寻路密集运算");
+        worker = new Worker("worker/worker.js");
+        worker.addEventListener("message", function (event) {
+            paths = event.data;
+            times = setInterval(onEnterFrame, 100);
+            worker.terminate();
+            console.log(worker);
+        }, false);
+        worker.addEventListener("error", function (event) {
+            console.log('异常结果：' + event.message, event.filename);
+        }, false);
+        worker.postMessage(data);
+    }
+    function onEnterFrame() {
+        var obj = paths[index];
+        ctx.clearRect(0, 0, 600, 800);
+       sum = obj.y * imw + obj.x;
+       bitmapData[sum * 4] = 255;
+       bitmapData[sum * 4 + 1] = 0;
+       bitmapData[sum * 4 + 2] = 0;
+       bitmapData[sum * 4 + 3] = 255;
+       ctx.putImageData(bitmap, 0, 0);
+        ctx.drawImage(cannon, 0, 0, imw, imh, 0, 0, imw, imh);
+        ctx.save();//保存画笔状态
+        ctx.translate(obj.x, obj.y);
+        ctx.rotate((obj.r + 90) * Math.PI / 180);
+        ctx.drawImage(bullet1, 0,0, 24, 26, -12,-13, 24, 26);
+        ctx.restore();//绘制结束以后，恢复画笔状态
+        index+=10;
+        if (index >= paths.length) {
+            clearInterval(times);
+        }
+    }
+</script>
+</body>
+</html>

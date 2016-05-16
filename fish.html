@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>捕鱼达人</title>
+    <meta name="author" content="ningxiao"/>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #candiv {
+            width: 1024px;
+            height: 650px;
+            position: relative;
+            left: 50%;
+            margin-left: -512px;
+            background-image:url(fish/img/game_bg_2_hd.jpg) ;
+        }
+        #canvas {
+            width: 1024px;
+            height: 650px;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+<div id="candiv">
+    <canvas id="canvas" width="1024" height="650">
+        <p>对不起,该浏览器不支持Html5</p>
+    </canvas>
+</div>
+<!--
+<script type="text/javascript" src="script/fish.min.js"></script>
+-->
+<script type="text/javascript" src="./flash/utils/Utils.js"></script>
+<script type="text/javascript">
+  flash.utils.debug("./fish/deps.js","fish");
+</script>
+</body>
+</html>

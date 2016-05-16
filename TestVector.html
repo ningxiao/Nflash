@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>粒子系统测试</title>
+    <meta name="author" content="ningxiao"/>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #candiv {
+            width: 1024px;
+            height: 650px;
+            position: relative;
+            left: 50%;
+            margin-left: -512px;
+            background-image:url(fish/img/game_bg_2_hd.jpg) ;
+        }
+
+        #canvas {
+            width: 1024px;
+            height: 650px;
+            position: relative;
+        }
+    </style>
+    <script type="text/javascript" src="flash/utils/socket.io.js"></script>
+    <script type="text/javascript" src="flash/utils/Utils.js"></script>
+    <script type="text/javascript" src="flash/utils/Profile.js"></script>
+    <script type="text/javascript" src="flash/geom/Rectangle.js"></script>
+    <script type="text/javascript" src="flash/geom/Point.js"></script>
+    <script type="text/javascript" src="flash/events/EventDispatcher.js"></script>
+    <script type="text/javascript" src="flash/display/Graphics.js"></script>
+    <script type="text/javascript" src="flash/display/DisplayObject.js"></script>
+    <script type="text/javascript" src="flash/events/Event.js"></script>
+    <script type="text/javascript" src="flash/errors/Error.js"></script>
+    <script type="text/javascript" src="flash/events/KeyboardEvent.js"></script>
+    <script type="text/javascript" src="flash/events/MouseEvent.js"></script>
+    <script type="text/javascript" src="flash/events/SoundEvent.js"></script>
+    <script type="text/javascript" src="flash/utils/Pool.js"></script>
+    <script type="text/javascript" src="flash/utils/Mode.js"></script>
+    <script type="text/javascript" src="flash/display/BitmapData.js"></script>
+    <script type="text/javascript" src="flash/display/Bitmap.js"></script>
+    <script type="text/javascript" src="flash/display/MovieClip.js"></script>
+    <script type="text/javascript" src="flash/display/Shape.js"></script>
+    <script type="text/javascript" src="flash/display/Sprite.js"></script>
+    <script type="text/javascript" src="flash/display/Button.js"></script>
+    <script type="text/javascript" src="flash/media/Sound.js"></script>
+    <script type="text/javascript" src="flash/display/Stage.js"></script>
+    <script type="text/javascript" src="flash/utils/Vector2.js"></script>
+    <script type="text/javascript" src="flash/utils/Color.js"></script>
+    <script type="text/javascript" src="flash/particle/Particle.js"></script>
+    <script type="text/javascript" src="flash/particle/ParticleSystem.js"></script>
+</head>
+<body>
+<div id="candiv">
+    <canvas id="kinematicsCancas" width="1024" height="650">
+        <p>对不起,该浏览器不支持Html5</p>
+    </canvas>
+</div>
+<!--
+<script type="text/javascript">
+    var position = new flash.Vector2(10, 200);
+    var velocity = new flash.Vector2(50, -50);
+    var acceleration = new flash.Vector2(0, 10);
+    var dt = 0.1;
+    var red = new flash.Color(1, 0, 0, 1).toRgba();
+    Stage = new flash.display.Stage(document.getElementById('kinematicsCancas'), 40);
+    var spr = new flash.display.Sprite(position.x, position.y, {height:400, width:400});
+    spr.graphics.beginFill(red);
+    spr.graphics.lineStyle(1,"#FFFFFF",flash.profile.lineJoin.round);
+    spr.graphics.drawCircle(0,0,5);
+    Stage.addEventListener(flash.events.ENTER_FRAME, onEnterFrame);
+    Stage.addChild(spr);
+    function onEnterFrame(event){
+        position = position.add(velocity.multiply(dt));
+        velocity = velocity.add(acceleration.multiply(dt));
+        spr.setVector(position);
+    }
+</script>
+!-->
+<script type="text/javascript">
+    var ps = new flash.ParticleSystem(),dt = 0.01,red = new flash.Color(1, 0, 0, 1),sprite;
+    function sampleDirection() {
+        var theta = Math.random() * 2 * Math.PI;
+        return new flash.Vector2(Math.cos(theta), Math.sin(theta));
+    }
+    Stage = new flash.display.Stage(document.getElementById('kinematicsCancas'), 40);
+    sprite = new flash.display.Sprite(0, 0, {height:400, width:400});
+    Stage.addChild(sprite);
+    Stage.addEventListener(flash.events.ENTER_FRAME, onEnterFrame);
+    function draw(particle){
+        var alpha = 1 - particle.age / particle.life;
+        red.a = alpha;
+        Stage.conText.fillStyle = red.toRgba();
+        Stage.conText.beginPath();
+        Stage.conText.arc(particle.position.x, particle.position.y, particle.size, 0, Math.PI * 2, true);
+        Stage.conText.closePath();
+        Stage.conText.fill();
+    }
+    function onEnterFrame(event){
+        ps.emit(new flash.Particle(new flash.Vector2(200, 200), sampleDirection().multiply(100), 1, red, 5));
+        ps.simulate(dt);
+        ps.render(draw);
+    }
+</script>
+</body>
+</html>

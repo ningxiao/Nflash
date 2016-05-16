@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>3D视频测试</title>
+    <meta name="author" content="ningxiao"/>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #candiv {
+            width: 640px;
+            height: 264px;
+            position: relative;
+            top: 50px;
+            left: 50%;
+            margin-left: -132px;
+        }
+
+        #canvasNx {
+            width: 640px;
+            height: 264px;
+            position: relative;
+        }
+    </style>
+    <script type="text/javascript" src="flash/utils/Utils.js"></script>
+</head>
+<body>
+<div id="candiv">
+    <video id="videoNx" width="634" height="264">
+        <source src="http://127.0.0.1/Nxiao/video/bunny.webm">
+    </video>
+    <canvas id="canvasNx" width="634" height="264">
+        <p>对不起,该浏览器不支持Html5</p>
+    </canvas>
+</div>
+<script type="text/javascript">
+    var videoNx = document.getElementById('videoNx');
+    var canvasNx = document.getElementById('canvasNx');
+    var ctxNx = canvasNx.getContext('2d');
+    var VIDEO_WIDTH = 634,VIDEO_HEIGHT=264;
+    var redImage,blueImage,redData,blueData;
+    var mixFactor = 0.5,lensColor = 255,popEffect = 100,minF = 1-mixFactor,offset = 5;
+    var isType="open3D";
+    videoNx.addEventListener("play",play_video);
+    videoNx.addEventListener("canplay",function (event) {
+        console.log("视频加载完毕可以播放。");
+        videoNx.play();
+    });
+    function play_video(){
+        window[isType]();
+        ctxNx.putImageData(redImage,0,0);
+        requestAnimationFrame(play_video);
+    }
+    function openHB(){
+        //开启黑白电影模式
+         ctxNx.drawImage(videoNx,0, 0);
+         redImage = ctxNx.getImageData(0,0,VIDEO_WIDTH,VIDEO_HEIGHT);
+         redData = redImage.data;
+         for(var i = 0,len = redData.length; i < len; i+=4) {
+            var grayscale = redData[i] * 0.3 + redData[i+1] * 0.59 + redData[i+2] * 0.11;
+            redData[i] = grayscale;   // 红色
+            redData[i+1] = grayscale;   // 绿色
+            redData[i+2] = grayscale;   // 蓝色
+        }
+    }
+    function open3D(){
+        //开启红蓝3D电影模式
+        ctxNx.drawImage(videoNx, -offset, 0);
+        redImage = ctxNx.getImageData(0,0,VIDEO_WIDTH,VIDEO_HEIGHT);
+        ctxNx.drawImage(videoNx, offset, 0);
+        blueImage = ctxNx.getImageData(0,0,VIDEO_WIDTH,VIDEO_HEIGHT);
+        redData = redImage.data;
+        blueData = blueImage.data;
+        for(var i = 0,len = redData.length; i < len; i+=4) {
+            redData[i]   = 255  * mixFactor+blueData[i]*minF;
+            redData[i+1] = redData[i+1] * mixFactor+lensColor*minF;
+            redData[i+2] = redData[i+2] * mixFactor+255*minF;
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>touch测试</title>
+    <meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0,user-scalable=no,width=device-width"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no,email=no"/>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #eeeeee;
+        }
+    </style>
+    <script type="text/javascript" src="script/flash.min.js"></script>
+    <script type="text/javascript" src="game/coinAni.js"></script>
+</head>
+<body>
+<canvas id="canvas" width="568" height="320">
+    <p>对不起,该浏览器不支持Html5</p>
+</canvas>
+<script type="text/javascript">
+    var coinMovieClip,animateButton,canvas,imgList=[{"coinAni":"imgs/coinAni.png"},{"btnA":"imgs/Button.png"}],bitmaps={};
+    function onClickAnimate(event) {
+        flash.utils.animate(coinMovieClip,{x:event.localX-coinMovieClip.width/2,y:event.localY-coinMovieClip.height/2},2000,'elasticOut',function(){
+            console.log("执行完毕",Stage.animate);
+        });
+    }
+    flash.utils.queueImg(imgList,bitmaps, function () {
+        Stage = new flash.display.Stage(document.getElementById("canvas"), 60);
+        coinMovieClip = coinAni(100, 100, bitmaps["coinAni"]);
+        animateButton = new flash.display.Button(460, 620, new flash.display.BitmapData(89, 26, 0, 0, bitmaps["btnA"]));
+        animateButton.useHandCursor = true;
+        animateButton.setOverSkin(new flash.display.BitmapData(89, 26, 0, 26, bitmaps["btnA"]));
+        animateButton.setLabel('开始动画');
+        animateButton.labely = animateButton.height / 2 + 4;
+        animateButton.labelx = 10;
+        Stage.addChild(animateButton);
+        Stage.addChild(coinMovieClip);
+        Stage.addEventListener(flash.events.MouseEvent.CLICK, onClickAnimate);
+    });
+</script>
+</body>
+</html>

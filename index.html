@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Shape测试</title>
+    <meta name="author" content="ningxiao"/>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #candiv {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            top: 50px;
+            left: 50%;
+            margin-left: -400px;
+        }
+
+        #canvas {
+            width: 800px;
+            height: 600px;
+            position: relative;
+        }
+    </style>
+    <script type="text/javascript" src="flash/utils/Utils.js"></script>
+    <script type="text/javascript" src="flash/utils/Profile.js"></script>
+    <script type="text/javascript" src="flash/geom/Rectangle.js"></script>
+    <script type="text/javascript" src="flash/geom/Point.js"></script>
+    <script type="text/javascript" src="flash/events/EventDispatcher.js"></script>
+    <script type="text/javascript" src="flash/display/Graphics.js"></script>
+    <script type="text/javascript" src="flash/display/DisplayObject.js"></script>
+    <script type="text/javascript" src="flash/events/Event.js"></script>
+    <script type="text/javascript" src="flash/errors/Error.js"></script>
+    <script type="text/javascript" src="flash/events/KeyboardEvent.js"></script>
+    <script type="text/javascript" src="flash/events/MouseEvent.js"></script>
+    <script type="text/javascript" src="flash/utils/Pool.js"></script>
+    <script type="text/javascript" src="flash/utils/Mode.js"></script>
+    <script type="text/javascript" src="flash/display/BitmapData.js"></script>
+    <script type="text/javascript" src="flash/display/Bitmap.js"></script>
+    <script type="text/javascript" src="flash/display/MovieClip.js"></script>
+    <script type="text/javascript" src="flash/display/Shape.js"></script>
+    <script type="text/javascript" src="flash/display/Sprite.js"></script>
+    <script type="text/javascript" src="flash/display/Button.js"></script>
+    <script type="text/javascript" src="flash/display/Stage.js"></script>
+</head>
+<body>
+<div id="candiv">
+    <canvas id="canvas" width="800" height="600">
+        <p>对不起,该浏览器不支持Html5</p>
+    </canvas>
+</div>
+<img src="" alt="" id="darw">
+<script type="text/javascript">
+    var imgArr = [
+        {"gg":"imgs/gg.jpg"},
+        {"mak":"imgs/leida.png"}
+    ];
+    var imgData = [];
+    var canvas = document.getElementById('canvas');
+    Stage = new flash.display.Stage(canvas, 40);
+    var pos = null, posb = null, posc = null, posd = null, bitm = null;
+    flash.utils.queueImg(imgArr, imgData, function () {
+        posb = new flash.display.Shape(100, 0, new flash.display.BitmapData(400, 400, 0, 0, imgData["gg"]));
+        pos = new flash.display.Shape(100, 0, new flash.display.BitmapData(128, 128, 0, 0, imgData["mak"]));
+        posc = new flash.display.Shape(150, 0, new flash.display.BitmapData(128, 128, 0, 0, imgData["mak"]));
+        posd = new flash.display.Shape(120, 0, new flash.display.BitmapData(128, 128, 0, 0, imgData["mak"]));
+        pos.centerX = 64;
+        pos.centerY = 64;
+        // pos.drawAlpha(0.5);
+        // posb.addChild(pos);
+        var x = [];
+        var y = [];
+        for (var i = 42; i < 86; i++) {
+            x.push(64);
+            y.push(i);
+        }
+        posc.bitmapData.setPixel(x, y, 0xFFFF0000, true);
+        for (var i = 42; i < 86; i++) {
+            x.push(i);
+            y.push(64);
+        }
+        // posc.bitmapData.fillRect(new flash.geom.Rectangle(0,0,64,64),0xFFFF0000,true);
+        posc.bitmapData.setPixel(x, y, 0xFFFF0000, true);
+        posb.addChild(posd);
+        posb.drawMask(pos);
+        Stage.addChild(posb);
+        Stage.addChild(posc);
+        Stage.addEventListener(flash.events.ENTER_FRAME, onEnterFrame);
+    });
+    function onEnterFrame(event) {
+        pos.rotation += 1;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>整蛊车神</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            background: #1e3039;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+            font: Arial, Helvetica, sans-serif;
+            letter-spacing: 0.1em;
+        }
+
+        .content {
+            height: 845px;
+            background: url(cargame/img/content_bg.png) no-repeat center center;
+            margin: 0 auto;
+        }
+
+        .game_btn {
+            width: 407px;
+            margin: 0 auto;
+            padding: 467px 0 0 0px;
+            height: 280px;
+        }
+
+        .game_btn a {
+            width: 407px;
+            height: 94px;
+            display: block;
+            text-indent: -9999px;
+        }
+        .game_content {
+            position: absolute;
+            top: 203px;
+            left: 336px;
+        }
+
+        canvas {
+            cursor: url(cargame/img/handcursor.cur), url(cargame/img/handcursor.cur), auto;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+    <script type="text/javascript" src="flash/utils/socket.io.js"></script>
+    <script type="text/javascript" src="flash/utils/Utils.js"></script>
+    <script type="text/javascript" src="flash/utils/Profile.js"></script>
+    <script type="text/javascript" src="flash/geom/Rectangle.js"></script>
+    <script type="text/javascript" src="flash/geom/Point.js"></script>
+    <script type="text/javascript" src="flash/events/EventDispatcher.js"></script>
+    <script type="text/javascript" src="flash/display/Graphics.js"></script>
+    <script type="text/javascript" src="flash/display/DisplayObject.js"></script>
+    <script type="text/javascript" src="flash/events/Event.js"></script>
+    <script type="text/javascript" src="flash/errors/Error.js"></script>
+    <script type="text/javascript" src="flash/events/KeyboardEvent.js"></script>
+    <script type="text/javascript" src="flash/events/MouseEvent.js"></script>
+    <script type="text/javascript" src="flash/utils/Pool.js"></script>
+    <script type="text/javascript" src="flash/utils/Mode.js"></script>
+    <script type="text/javascript" src="flash/display/BitmapData.js"></script>
+    <script type="text/javascript" src="flash/display/Bitmap.js"></script>
+    <script type="text/javascript" src="flash/display/MovieClip.js"></script>
+    <script type="text/javascript" src="flash/display/Shape.js"></script>
+    <script type="text/javascript" src="flash/display/Sprite.js"></script>
+    <script type="text/javascript" src="flash/display/Button.js"></script>
+    <script type="text/javascript" src="flash/display/Label.js"></script>
+    <script type="text/javascript" src="flash/display/Stage.js"></script>
+    <script type="text/javascript" src="cargame/config.js"></script>
+    <script type="text/javascript" src="cargame/event/CarEvent.js"></script>
+    <script type="text/javascript" src="cargame/ui/guide.js"></script>
+    <script type="text/javascript" src="cargame/ui/panel.js"></script>
+    <script type="text/javascript" src="cargame/ui/props.js"></script>
+</head>
+<body>
+    <div class="content" id="content" style="position:relative; z-index:1;">
+    </div>
+    <div class="game_content" id="game_content" style="z-index: 2">
+        <canvas id="canvas" width="800" height="600" style="position: absolute; z-index: 1; display:block;"></canvas>
+    </div>
+    <script type="text/javascript" src="cargame/main.js"></script>
+</body>
+</html>

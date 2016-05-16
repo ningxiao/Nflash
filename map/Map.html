@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>地图卷动</title>
+    <style type="text/css">
+        #myCanvas {
+            border: solid 4px #f31f32;
+            background-color: #111;
+            color: #CCC;
+        }
+    </style>
+    <script type="text/javascript" src="../flash/utils/Utils.js"></script>
+    <script type="text/javascript">
+        // 设计一个地图大小为高宽350 高400 数据列表
+        var maps = {list:[]};
+        var view = {width:400, height:300, x:0, y:0, xl:400, yl:300};
+        var direction = "left";
+        var speed = 5;
+        var map_w = maps.width;
+        var map_h = maps.height;
+        var bitmaps = {};
+        var urls = [];
+        var key,json;
+        var imgW = 576;
+        var imgH = 576;
+        var llh=0;
+        var siMap = null;
+        for(var u=0;u<9;u++){
+            key = "changan"+u;
+            json = {};
+            json[key] = "../map/images/"+key+".jpg";
+            urls.push(json);
+        }
+        var index=0;
+        for(var la=0;la<3;la++){
+            if(la){
+                imgH = 432;
+            }
+            key = [];
+            for(var lb=0;lb<3;lb++){
+                json = {};
+                json.key = "changan"+index;
+                json.x = lb*imgW;
+                json.y = llh;
+                json.width = imgW;
+                json.height = imgH;
+                json.xl = json.x+json.width;
+                json.yl = json.y+json.height;
+                key.push(json)
+                index++;
+            }
+            llh+= imgH;
+            maps.list.push(key);
+        }
+        maps.width = 576 *3;
+        maps.height = 432*2 +576;
+    </script>
+</head>
+<body>
+<canvas id="myCanvas" width="400" height="300">
+    你的浏览器不支持html5.
+</canvas>
+<script type="text/javascript">
+    var can = document.getElementById("myCanvas");
+    var cxt = can.getContext("2d");
+    function moveView(type) {
+        switch (type) {
+            case "left":
+                view.x-=speed;
+                view.xl-=speed;
+                break;
+            case "up":
+                view.y-=speed;
+                view.yl-=speed;
+                break;
+            case "right":
+                view.x+=speed;
+                view.xl+=speed;
+                break;
+            case "down":
+                view.y+=speed;
+                view.yl+=speed;
+                break;
+            default:
+                break;
+        }
+        if(view.x<0){
+            view.x = 0;
+            view.xl = view.width;
+        }
+        if(view.y<0){
+            view.y = 0;
+            view.yl = view.height;
+        }
+        if(view.xl>maps.width){
+            view.x = maps.width - view.width;
+            view.xl = maps.width;
+        }
+        if(view.yl>maps.height){
+            view.y = maps.height - view.height;
+            view.yl = maps.height;
+        }
+        siMap = collision(view, maps.list);
+    }
+    function collision(a, b) {
+        var hList,map,coll,lx,ly,lw=0,lh=0,list = [];
+        for (var i = 0, lenA = b.length; i < lenA; i++) {
+            hList = b[i];
+            for (var k = 0, lenB = hList.length; k < lenB; k++) {
+                map = hList[k];
+                if (!(a.x > map.xl || a.xl < map.x || a.y > map.yl || a.yl < map.y)) {
+                    if (a.x == map.x && a.y == map.y && a.xl == map.xl && a.yl == map.yl) {
+                        return [[{key:map.key,x:0, y:0}]];
+                        break;
+                    }
+                    coll || (coll = []);
+                    coll.push({key:map.key,x:map.x,y:map.y,w:map.width, h:map.height});
+                }
+            }
+            coll && list.push(coll);
+            coll = null;
+        }
+        map = list[0][0];
+        lx = a.x - map.x;
+        ly = a.y - map.y;
+        for (i = 0, lenA = list.length; i < lenA; i++) {
+            hList = list[i];
+            for (k = 0, lenB = hList.length; k < lenB; k++) {
+                map = hList[k];
+                map.x = lw - lx;
+                map.y = lh - ly;
+                lw+=map.w;
+            }
+            lh+=map.h;
+            lw = 0;
+        }
+        lh = 0;
+        return list;
+    }
+    document.onkeydown = function (event) {
+        switch (event.keyCode) {
+            case 37:
+                direction = "left";
+                break;
+            case 38:
+                direction = "up";
+                break;
+            case 39:
+                direction = "right";
+                break;
+            case 40:
+                direction = "down";
+                break;
+            default:
+                break;
+        }
+        //moveView(direction);
+        event.preventDefault();
+    }
+    flash.utils.queueImg(urls, bitmaps, function () {
+        siMap = collision(view, maps.list);
+        startDraw();
+    });
+    function startDraw() {
+        cxt.clearRect(0, 0, 400, 300);
+        for (var i = 0, lenA = siMap.length; i < lenA; i++) {
+            var hList = siMap[i];
+            for (var k = 0, lenB = hList.length; k < lenB; k++) {
+                var map = hList[k];
+                cxt.drawImage(bitmaps[map.key], 0, 0, map.w, map.h, map.x, map.y, map.w, map.h);
+            }
+        }
+        moveView(direction);
+        requestAnimationFrame(flash.utils.bind(startDraw, this));
+    }
+</script>
+</body>
+</html>

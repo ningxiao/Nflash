@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>MovieClip测试</title>
+    <meta name="author" content="ningxiao"/>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #candiv {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            top: 50px;
+            left: 50%;
+            margin-left: -400px;
+        }
+
+        #canvas {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            border-style:solid; border-width: 1px;
+        }
+    </style>
+     <script type="text/javascript" src="flash/utils/socket.io.js"></script>
+    <script type="text/javascript" src="flash/utils/Utils.js"></script>
+    <script type="text/javascript" src="flash/utils/Profile.js"></script>
+    <script type="text/javascript" src="flash/geom/Rectangle.js"></script>
+    <script type="text/javascript" src="flash/geom/Point.js"></script>
+    <script type="text/javascript" src="flash/display/Graphics.js"></script>
+    <script type="text/javascript" src="flash/events/EventDispatcher.js"></script>
+    <script type="text/javascript" src="flash/display/DisplayObject.js"></script>
+    <script type="text/javascript" src="flash/events/Event.js"></script>
+    <script type="text/javascript" src="flash/errors/Error.js"></script>
+    <script type="text/javascript" src="flash/events/KeyboardEvent.js"></script>
+    <script type="text/javascript" src="flash/events/MouseEvent.js"></script>
+    <script type="text/javascript" src="flash/utils/Pool.js"></script>
+    <script type="text/javascript" src="flash/utils/Mode.js"></script>
+    <script type="text/javascript" src="flash/display/BitmapData.js"></script>
+    <script type="text/javascript" src="flash/display/Bitmap.js"></script>
+    <script type="text/javascript" src="flash/display/MovieClip.js"></script>
+    <script type="text/javascript" src="flash/display/Shape.js"></script>
+    <script type="text/javascript" src="flash/display/Sprite.js"></script>
+    <script type="text/javascript" src="flash/display/Button.js"></script>
+    <script type="text/javascript" src="flash/display/Stage.js"></script>
+</head>
+<body>
+<div id="candiv">
+    <canvas id="canvas" width="800" height="600">
+        <p>对不起,该浏览器不支持Html5</p>
+    </canvas>
+</div>
+<img src="" alt="" id="darw">
+<script type="text/javascript">
+    var url = "xml/eff.json";
+    var urls = [
+        {"coinAni":"imgs/eff.png"},
+        {"bg":"imgs/bg.jpg"}
+    ], bitmaps = [];
+    var canvas = document.getElementById('canvas');
+    var coinAni = null,bg=null,isclick=false;
+    var Paths = [];
+    Stage = new flash.display.Stage(canvas, 40);
+    flash.utils.createURL(url,function(data){
+         var effs = data["eff_5"];
+        flash.utils.queueImg(urls, bitmaps, function () {
+            var eff =  effs[0];
+            bg =  new flash.display.Sprite(0,0, new flash.display.BitmapData(800, 581, 0, 0, bitmaps["bg"]));
+            coinAni = new flash.display.MovieClip(0, 0,new flash.display.BitmapData(eff.width, eff.height,eff.x, eff.y, bitmaps["coinAni"]));
+            for(var i=1;i<effs.length;i++){
+                eff =  effs[i];
+                coinAni.addFrame(new flash.display.BitmapData(eff.width, eff.height, eff.x, eff.y, bitmaps["coinAni"]));
+            }
+            coinAni.mask=true;
+            coinAni.operAtion = flash.profile.operAtion["LIGHTER"];
+            coinAni.centerX = 44;//显示对象的注册点坐标
+            coinAni.centerY = 35;//显示对象的注册点坐标
+
+            Stage.addChild(bg);
+            coinAni.y = 250;
+            Stage.addChild(coinAni);
+           // coinAni.addEventListener(flash.events.MouseEvent.MOUSEDOWN, onClick);
+            //coinAni.addEventListener(flash.events.MouseEvent.MOUSEOUT, onMouSeout);
+           // coinAni.addEventListener(flash.events.MouseEvent.MOUSEOVER, onMouSemove);
+            bg.addEventListener(flash.events.MouseEvent.MOUSEMOVE,openMover);
+            Stage.addEventListener(flash.events.ENTER_FRAME, onEnterFrame);
+        });
+        function openMover(event){
+            Paths.push({x:(event.stageX-(coinAni.width/2)),y:event.stageY-(coinAni.height/2)});
+
+//            coinAni.setX(event.stageX-(coinAni.width/2));
+//            coinAni.setY(event.stageY-(coinAni.height/2));
+        }
+        function onMouSemove(event){
+            console.log("移入金币",coinAni.width,coinAni.height);
+        }
+        function onMouSeout(event){
+            console.log("离开金币");
+        }
+        function onClick(event){
+            this.gotoAndStop(this.currentFrame);
+            console.log(event.stageY,event.localY);
+        }
+        function onEnterFrame(event) {
+            var path;
+            if(Paths.length>0){
+                path = Paths.shift();
+                coinAni.setX(path.x);
+                coinAni.setY(path.y);
+            }
+            //coinAni.rotation +=5;
+            //coinAni.setX(coinAni.x+5);
+        }
+    });
+</script>
+</body>
+</html>

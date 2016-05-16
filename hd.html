@@ -1,0 +1,89 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>控制手柄</title>
+    <meta name="viewport" content="width=960,height=580,user-scalable=no">
+    <script type="text/javascript" src="flash/utils/socket.io.js"></script>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #handle{
+            position: relative;
+            width:920px;
+            height: 540px;
+            border:#ff0c18 solid thin;
+            left: 20px;
+            top: 20px;
+        }
+        .direction{
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            font-size: 48px;
+            color: #fff;
+            text-align: center;
+            line-height:100px;
+            overflow:hidden;
+            background-color: #000;
+        }
+        .fire{
+            width: 100px;
+            height: 100px;
+            background-color: #000;
+            position:absolute;
+            left: 20px;
+            top: 240px;
+            color: #fff;
+            font-size: 48px;
+            text-align: center;
+            line-height:100px;
+            overflow:hidden;
+        }
+    </style>
+</head>
+<body>
+<div id="handle">
+    <div class="fire" data-value="fire">开火</div>
+    <div style="width: 300px;height: 300px;position:absolute;top: 140px; right: 20px;">
+        <div class="direction" style="background-color:#17ff1e;left: 100px;" data-value="up">上</div>
+        <div class="direction" style="background-color:#221fff;top: 100px;" data-value="left">左</div>
+        <div class="direction" style="background-color:#000000;top: 100px;right: 0px;" data-value="right">右</div>
+        <div class="direction" style="background-color:#dc1fff;bottom:0px;right: 100px;" data-value="down">下</div>
+    </div>
+</div>
+<script type="text/javascript">
+    var handle = document.getElementById("handle");
+    var socket = io.connect('http://192.168.202.204:8888/handle');
+    function sendData(data) {
+        socket.emit('handle', data);
+    }
+    document.body.addEventListener('touchmove', function (event) {
+        event.preventDefault();
+    }, false);
+    handle.addEventListener('click', function(event) {//touchstart
+        var type = event.target.getAttribute("data-value");
+        switch (type) {
+            case "up":
+                sendData({"type":"up"});
+                break;
+            case "left":
+                sendData({"type":"left"});
+                break;
+            case "right":
+                sendData({"type":"right"});
+                break;
+            case "down":
+                sendData({"type":"down"});
+                break;
+            case "fire":
+                sendData({"type":"fire"});
+                break;
+            default:
+                break;
+        }
+    }, false);
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>WebSocket与AIR通信</title>
+    <meta name="author" content="ningxiao"/>
+</head>
+<body>
+<p>利用AIR的Socket接收到WebSocket对其通信协议解析实现通信</p>
+
+<div id="message"></div>
+<p>请输入一些文字</p>
+<input id="text" type="text"/>
+<input type="button" id="connect" value="建立连接"/>
+<input type="button" id="send" value="发送数据"/>
+<input type="button" id="disconnect" value="断开连接"/>
+<script type="text/javascript">
+    var connect, send, disconnect, text, message, host, socket, readyState;
+    function $(id) {
+        return document.getElementById(id) || false;
+    }
+    function init() {
+        readyState = new Array('正在连接', '已建立连接', '正在关闭连接', '已关闭连接');
+        host = "ws://192.168.202.204:8080/";
+        connect = $("connect");
+        send = $("send");
+        text = $("text");
+        disconnect = $("disconnect");
+        message = $("message");
+        connect.onclick = connectFun;
+    }
+    function connectFun() {
+        try {
+            socket = new WebSocket(host);
+            message.innerHTML += "<p>Socket状态" + readyState[socket.readyState] + "<\/p>";
+            socket.onopen = function () {
+                message.innerHTML += "<p>Socket状态" + readyState[socket.readyState] + "<\/p>";
+                socket.onmessage = function (msg) {
+                    message.innerHTML += "<p>接收信息" + msg.data + "<\/p>";
+                }
+                socket.onclose = function () {
+                    message.innerHTML += "<p>Socket状态" + readyState[socket.readyState] + "<\/p>";
+                }
+            }
+        } catch (exception) {
+            message.innerHTML += "<p>发生错误<\/p>";
+        }
+    }
+    function sendFun() {
+        if (text == "") {
+            message.innerHTML += "<p>请输入一些文字<\/p>";
+            return;
+        }
+        try {
+            socket.send(text);
+            message.innerHTML += "<p>发送数据" + text + "<\/p>";
+        } catch (exception) {
+            message.innerHTML += "<p>发送数据错误<\/p>";
+        }
+        text.value = "";
+    }
+    function disconnectFun() {
+        socket.close();
+    }
+    init();
+</script>
+</body>
+</html>

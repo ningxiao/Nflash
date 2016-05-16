@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>自定义事件</title>
+    <meta name="author" content="ningxiao"/>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script type="text/javascript" src="flash/utils/Utils.js"></script>
+    <script type="text/javascript" src="flash/events/Event.js"></script>
+    <script type="text/javascript" src="flash/events/EventDispatcher.js"></script>
+    <script type="text/javascript" src="flash/events/MouseEvent.js"></script>
+    <script type="text/javascript">
+        function list(){
+            this.data = [];
+        }
+        flash.utils.inherits(list, flash.events.EventDispatcher);
+        list.prototype.add=function(val){
+            this.data.push(val);
+            this.dispatchEvent(new flash.events.Event("addEvent"));
+        }
+    </script>
+</head>
+<body>
+<input type="button" value="添加" id="but"/>
+</body>
+<script type="text/javascript">
+    var but = document.getElementById("but");
+    var butList = new list(),key,sum=0;
+    butList.addEventListener("addEvent",addLogC);
+    key = butList.addEventListener("addEvent",addLogB);
+    but.onclick = function(){
+        if(sum>5){
+            butList.unlistenByKey(key);
+        }
+        sum++;
+        butList.add(Math.random());
+    }
+    function addLogC(event){
+        console.log("addLogC",event.target.data);
+    }
+    function addLogB(event){
+        console.log("addLogB",event.data);
+    }
+</script>
+</html>
